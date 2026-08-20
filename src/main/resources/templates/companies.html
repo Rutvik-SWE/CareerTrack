@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Companies - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-brand">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </a>
+            <ul class="sidebar-nav">
+                <li><a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a th:href="@{/applications}"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+                <li><a th:href="@{/companies}" class="active"><i class="fa-solid fa-building"></i> Companies</a></li>
+                <li><a th:href="@{/profile}"><i class="fa-solid fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-nav" style="flex-grow: 0; padding-bottom: 20px;">
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Companies</h2>
+                    <p class="subtitle">Manage the companies where you have applied.</p>
+                </div>
+                <a th:href="@{/companies/add}" class="btn"><i class="fa-solid fa-plus"></i> Add Company</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Location</th>
+                            <th>Website</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="comp : ${companies}">
+                            <td th:text="${comp.name}">Google</td>
+                            <td th:text="${comp.location}">Bangalore</td>
+                            <td>
+                                <a th:if="${comp.website != null and !comp.website.isEmpty()}" 
+                                   th:href="${comp.website}" target="_blank" 
+                                   style="color: var(--primary-blue); text-decoration: none;">
+                                   <span th:text="${comp.website}"></span> <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; margin-left: 4px;"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{/companies/edit/{id}(id=${comp.id})}" class="action-icon" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                                <a th:href="@{/companies/delete/{id}(id=${comp.id})}" class="action-icon delete" title="Delete" onclick="return confirm('Are you sure? This will delete the company and all associated applications.');"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(companies)}">
+                            <td colspan="4" class="text-center" style="padding: 40px;">
+                                <p style="color: var(--text-light); margin-bottom: 10px;">No companies added yet.</p>
+                                <a th:href="@{/companies/add}" class="btn"><i class="fa-solid fa-plus"></i> Add one now</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

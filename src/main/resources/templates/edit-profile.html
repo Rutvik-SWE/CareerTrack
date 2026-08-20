@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .edit-form-container {
+            max-width: 800px;
+        }
+        .form-section {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .form-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            color: #0f172a;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .form-row .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-brand">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </a>
+            <ul class="sidebar-nav">
+                <li><a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a th:href="@{/applications}"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+                <li><a th:href="@{/companies}"><i class="fa-solid fa-building"></i> Companies</a></li>
+                <li><a th:href="@{/profile}" class="active"><i class="fa-solid fa-user"></i> My Profile</a></li>
+            </ul>
+            <ul class="sidebar-nav" style="flex-grow: 0; padding-bottom: 20px;">
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="mb-4">
+                <h2>Edit Profile</h2>
+                <p class="subtitle">Update your personal and professional information.</p>
+            </div>
+
+            <div class="edit-form-container">
+                <form th:action="@{/profile/save}" th:object="${profile}" method="post">
+                    
+                    <div class="form-section">
+                        <h3>Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fullName">Full Name *</label>
+                                <input type="text" id="fullName" th:field="*{fullName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" th:field="*{email}" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" id="phone" th:field="*{phone}" placeholder="+1 (555) 000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" th:field="*{location}" placeholder="City, State">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Professional Information</h3>
+                        <div class="form-group">
+                            <label for="summary">Professional Summary</label>
+                            <textarea id="summary" th:field="*{summary}" rows="4" placeholder="Brief overview of your professional background..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="skills">Skills</label>
+                            <textarea id="skills" th:field="*{skills}" rows="2" placeholder="Java, Python, SQL, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Links</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn URL</label>
+                                <input type="url" id="linkedin" th:field="*{linkedin}" placeholder="https://linkedin.com/in/username">
+                            </div>
+                            <div class="form-group">
+                                <label for="github">GitHub URL</label>
+                                <input type="url" id="github" th:field="*{github}" placeholder="https://github.com/username">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a th:href="@{/profile}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

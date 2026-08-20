@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Applications - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-brand">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </a>
+            <ul class="sidebar-nav">
+                <li><a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a th:href="@{/applications}" class="active"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+                <li><a th:href="@{/companies}"><i class="fa-solid fa-building"></i> Companies</a></li>
+                <li><a th:href="@{/profile}"><i class="fa-solid fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-nav" style="flex-grow: 0; padding-bottom: 20px;">
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Applications</h2>
+                    <p class="subtitle">Track all your job applications from different platforms in one place.</p>
+                </div>
+                <a th:href="@{/applications/add}" class="btn"><i class="fa-solid fa-plus"></i> Add Application</a>
+            </div>
+
+            <div class="table-container">
+                <!-- Search & Filter Bar -->
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <form th:action="@{/applications}" method="get" class="d-flex gap-3 flex-1" style="margin: 0;">
+                        <div class="form-group" style="margin: 0; flex: 1;">
+                            <input type="text" name="search" placeholder="Search applications..." th:value="${search}">
+                        </div>
+                        <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
+                    
+                    <form th:action="@{/applications}" method="get" class="d-flex gap-3 flex-1" style="margin: 0;">
+                        <div class="form-group" style="margin: 0; flex: 1;">
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                <option value="Saved" th:selected="${selectedStatus == 'Saved'}">Saved</option>
+                                <option value="Applied" th:selected="${selectedStatus == 'Applied'}">Applied</option>
+                                <option value="Assessment" th:selected="${selectedStatus == 'Assessment'}">Assessment</option>
+                                <option value="Interview" th:selected="${selectedStatus == 'Interview'}">Interview</option>
+                                <option value="Offer" th:selected="${selectedStatus == 'Offer'}">Offer</option>
+                                <option value="Rejected" th:selected="${selectedStatus == 'Rejected'}">Rejected</option>
+                                <option value="Withdrawn" th:selected="${selectedStatus == 'Withdrawn'}">Withdrawn</option>
+                            </select>
+                        </div>
+                    </form>
+                    <a th:href="@{/applications}" class="btn btn-secondary" title="Clear Filters" th:if="${search != null or selectedStatus != null}">Clear</a>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Position</th>
+                            <th>Platform</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td th:text="${app.company.name}">Google</td>
+                            <td th:text="${app.jobTitle}">Software Engineer</td>
+                            <td th:text="${app.jobPlatform}">LinkedIn</td>
+                            <td th:text="${app.appliedDate}">2026-08-20</td>
+                            <td><span th:class="'status status-' + ${app.status.toLowerCase()}" th:text="${app.status}">Applied</span></td>
+                            <td>
+                                <a th:href="@{/applications/edit/{id}(id=${app.id})}" class="action-icon" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                                <a th:href="@{/applications/delete/{id}(id=${app.id})}" class="action-icon delete" title="Delete" onclick="return confirm('Are you sure you want to delete this application?');"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(applications)}">
+                            <td colspan="6" class="text-center" style="padding: 40px;">
+                                <p style="color: var(--text-light); margin-bottom: 10px;">No applications found.</p>
+                                <a th:href="@{/applications/add}" class="btn"><i class="fa-solid fa-plus"></i> Add one now</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

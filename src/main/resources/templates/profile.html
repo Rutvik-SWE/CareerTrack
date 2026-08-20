@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+        }
+        .profile-section {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .section-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #0f172a;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        .data-label {
+            font-weight: 500;
+            color: var(--text-light);
+            width: 150px;
+            flex-shrink: 0;
+        }
+        .data-value {
+            color: var(--text-main);
+            flex-grow: 1;
+            white-space: pre-wrap;
+        }
+        .btn-copy {
+            background: #f1f5f9;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-copy:hover {
+            background: #e2e8f0;
+            color: var(--primary-blue);
+        }
+        
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-brand">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </a>
+            <ul class="sidebar-nav">
+                <li><a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a th:href="@{/applications}"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+                <li><a th:href="@{/companies}"><i class="fa-solid fa-building"></i> Companies</a></li>
+                <li><a th:href="@{/profile}" class="active"><i class="fa-solid fa-user"></i> My Profile</a></li>
+            </ul>
+            <ul class="sidebar-nav" style="flex-grow: 0; padding-bottom: 20px;">
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4 profile-container">
+                <div>
+                    <h2>My Profile</h2>
+                    <p class="subtitle">Store your job application information here for easy copy-pasting.</p>
+                </div>
+                <a th:href="@{/profile/edit}" class="btn"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success profile-container">
+                <i class="fa-solid fa-check-circle"></i> <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error profile-container">
+                <i class="fa-solid fa-circle-exclamation"></i> <span th:text="${error}"></span>
+            </div>
+
+            <div class="profile-container">
+                
+                <!-- Personal Information -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3>Personal Information</h3>
+                        <button class="btn-copy" onclick="copyAllPersonal()">
+                            <i class="fa-regular fa-copy"></i> Copy All
+                        </button>
+                    </div>
+                    
+                    <div class="data-row">
+                        <div class="data-label">Full Name</div>
+                        <div class="data-value" id="val-name" th:text="${profile.fullName}">-</div>
+                        <button class="btn-copy" onclick="copyText('val-name', 'Name')">Copy</button>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Email</div>
+                        <div class="data-value" id="val-email" th:text="${profile.email}">-</div>
+                        <button class="btn-copy" onclick="copyText('val-email', 'Email')">Copy</button>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Phone</div>
+                        <div class="data-value" id="val-phone" th:text="${profile.phone != null ? profile.phone : '-'}">-</div>
+                        <button class="btn-copy" onclick="copyText('val-phone', 'Phone')">Copy</button>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Location</div>
+                        <div class="data-value" id="val-location" th:text="${profile.location != null ? profile.location : '-'}">-</div>
+                        <button class="btn-copy" onclick="copyText('val-location', 'Location')">Copy</button>
+                    </div>
+                </div>
+
+                <!-- Professional Summary -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3>Professional Summary</h3>
+                        <button class="btn-copy" onclick="copyText('val-summary', 'Summary')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div class="data-value" id="val-summary" th:text="${profile.summary != null ? profile.summary : 'No summary added.'}"></div>
+                </div>
+
+                <!-- Skills -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3>Skills</h3>
+                        <button class="btn-copy" onclick="copyText('val-skills', 'Skills')">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div class="data-value" id="val-skills" th:text="${profile.skills != null ? profile.skills : 'No skills added.'}"></div>
+                </div>
+
+                <!-- Links -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3>Links</h3>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">LinkedIn</div>
+                        <div class="data-value" id="val-linkedin" th:text="${profile.linkedin != null ? profile.linkedin : '-'}">-</div>
+                        <button class="btn-copy" onclick="copyText('val-linkedin', 'LinkedIn')">Copy</button>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">GitHub</div>
+                        <div class="data-value" id="val-github" th:text="${profile.github != null ? profile.github : '-'}">-</div>
+                        <button class="btn-copy" onclick="copyText('val-github', 'GitHub')">Copy</button>
+                    </div>
+                </div>
+
+                <!-- Resume -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3>Resume</h3>
+                    </div>
+                    
+                    <div th:if="${profile.resumeFilename != null}">
+                        <div class="data-row" style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-file-pdf" style="font-size: 24px; color: #dc2626;"></i>
+                                <span style="font-weight: 500;" th:text="${profile.resumeFilename}">Resume.pdf</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <a th:href="@{/profile/resume/download}" class="btn btn-secondary" target="_blank"><i class="fa-solid fa-eye"></i> View / Download</a>
+                            
+                            <form th:action="@{/profile/resume/delete}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete your resume?');">
+                                <button type="submit" class="btn btn-secondary" style="color: var(--danger); border-color: #fca5a5;"><i class="fa-solid fa-trash"></i> Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${profile.resumeFilename == null}">
+                        <p style="color: var(--text-light); margin-bottom: 15px;">No resume uploaded yet.</p>
+                    </div>
+
+                    <!-- Upload Form (Always visible to allow replace) -->
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <form th:action="@{/profile/resume/upload}" method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-3">
+                            <input type="file" name="resumeFile" accept="application/pdf" required style="border: 1px solid var(--border-color); padding: 8px; border-radius: 6px;">
+                            <button type="submit" class="btn"><i class="fa-solid fa-upload"></i> Upload PDF</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Copied successfully</div>
+
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function copyText(elementId, fieldName) {
+            const text = document.getElementById(elementId).innerText;
+            if (text && text !== '-') {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(fieldName + " copied");
+                }).catch(err => {
+                    console.error("Failed to copy text: ", err);
+                    showToast("Failed to copy");
+                });
+            } else {
+                showToast("Nothing to copy");
+            }
+        }
+
+        function copyAllPersonal() {
+            const name = document.getElementById('val-name').innerText;
+            const email = document.getElementById('val-email').innerText;
+            const phone = document.getElementById('val-phone').innerText;
+            const location = document.getElementById('val-location').innerText;
+            
+            const allText = `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nLocation: ${location}`;
+            
+            navigator.clipboard.writeText(allText).then(() => {
+                showToast("Personal info copied");
+            }).catch(err => {
+                showToast("Failed to copy");
+            });
+        }
+
+        // Auto-hide success messages after 6 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-success, .alert-error:not(.mt-3)');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.style.display = 'none', 500);
+            });
+        }, 6000);
+    </script>
+</body>
+</html>

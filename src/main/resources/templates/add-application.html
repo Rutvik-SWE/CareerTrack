@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${application.id != null ? 'Edit Application' : 'Add Application'} + ' - CareerTrack'"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-brand">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </a>
+            <ul class="sidebar-nav">
+                <li><a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a th:href="@{/applications}" class="active"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+                <li><a th:href="@{/companies}"><i class="fa-solid fa-building"></i> Companies</a></li>
+                <li><a th:href="@{/profile}"><i class="fa-solid fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-nav" style="flex-grow: 0; padding-bottom: 20px;">
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="mb-4">
+                <h2 th:text="${application.id != null ? 'Edit Job Application' : 'Add Job Application'}"></h2>
+                <p class="subtitle" th:text="${application.id != null ? 'Update your application details.' : 'Record a job you applied for.'}"></p>
+            </div>
+
+            <div class="form-card">
+                <form th:action="@{/applications/save}" th:object="${application}" method="post">
+                    <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{user}" th:if="${application.id != null}">
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="company">Company *</label>
+                            <select id="company" th:field="*{company}" required>
+                                <option value="">Select company</option>
+                                <option th:each="comp : ${companies}" th:value="${comp.id}" th:text="${comp.name}"></option>
+                            </select>
+                            <div class="alert alert-error mt-3" th:if="${#fields.hasErrors('company')}" th:errors="*{company}"></div>
+                            <small style="color: var(--text-light); font-size: 12px; margin-top: 4px; display: block;">Don't see the company? <a th:href="@{/companies/add}" style="color: var(--primary-blue); text-decoration: none;">Add it first</a>.</small>
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="jobTitle">Job Title *</label>
+                            <input type="text" id="jobTitle" th:field="*{jobTitle}" placeholder="e.g. Software Engineer" required>
+                            <div class="alert alert-error mt-3" th:if="${#fields.hasErrors('jobTitle')}" th:errors="*{jobTitle}"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="jobPlatform">Job Platform</label>
+                            <select id="jobPlatform" th:field="*{jobPlatform}">
+                                <option value="LinkedIn">LinkedIn</option>
+                                <option value="Naukri">Naukri</option>
+                                <option value="Indeed">Indeed</option>
+                                <option value="Company Website">Company Website</option>
+                                <option value="Referral">Referral</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="jobUrl">Job URL</label>
+                            <input type="url" id="jobUrl" th:field="*{jobUrl}" placeholder="https://">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" th:field="*{location}" placeholder="e.g. Pune, Remote">
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="salary">Salary (Expected/Offered)</label>
+                            <input type="text" id="salary" th:field="*{salary}" placeholder="e.g. $100k - $120k">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="appliedDate">Applied Date *</label>
+                            <input type="date" id="appliedDate" th:field="*{appliedDate}" required>
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1; min-width: 300px;">
+                            <label for="status">Status *</label>
+                            <select id="status" th:field="*{status}" required>
+                                <option value="Saved">Saved</option>
+                                <option value="Applied">Applied</option>
+                                <option value="Assessment">Assessment</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Offer">Offer</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Withdrawn">Withdrawn</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" th:field="*{notes}" rows="4" placeholder="Add notes (optional)"></textarea>
+                    </div>
+                    
+                    <div class="mt-3" style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <a th:href="@{/applications}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn">Save Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

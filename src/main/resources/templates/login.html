@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="logo">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </div>
+            <h2>Welcome Back!</h2>
+            <p>Track all your job applications in one place.</p>
+            
+            <div th:if="${param.error}" class="alert alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i> Invalid email or password.
+            </div>
+            
+            <div th:if="${param.logout}" class="alert alert-success">
+                <i class="fa-solid fa-check-circle"></i> You have been logged out.
+            </div>
+
+            <div th:if="${param.registered}" class="alert alert-success">
+                <i class="fa-solid fa-check-circle"></i> Registration successful! Please login.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username">Email</label>
+                    <input type="email" id="username" name="username" placeholder="Enter your email" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            
+            <div class="text-center mt-3" style="font-size: 14px; color: var(--text-light);">
+                <p>Don't have an account? <a th:href="@{/register}" style="color: var(--primary-blue); font-weight: 500; text-decoration: none;">Register</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-hide success/status messages after 6 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.style.display = 'none', 500);
+            });
+        }, 6000);
+    </script>
+</body>
+</html>

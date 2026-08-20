@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a th:href="@{/dashboard}" class="sidebar-brand">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </a>
+            <ul class="sidebar-nav">
+                <li><a th:href="@{/dashboard}" class="active"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                <li><a th:href="@{/applications}"><i class="fa-solid fa-file-lines"></i> Applications</a></li>
+                <li><a th:href="@{/companies}"><i class="fa-solid fa-building"></i> Companies</a></li>
+                <li><a th:href="@{/profile}"><i class="fa-solid fa-user"></i> Profile</a></li>
+            </ul>
+            <ul class="sidebar-nav" style="flex-grow: 0; padding-bottom: 20px;">
+                <li>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Welcome back! 👋</h2>
+                    <p class="subtitle">Keep tracking. Keep growing.</p>
+                </div>
+                <a th:href="@{/applications/add}" class="btn"><i class="fa-solid fa-plus"></i> Add Application</a>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-error mb-4" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success mb-4" th:text="${success}"></div>
+            
+            <div class="dashboard-stats mt-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Total Applications</span>
+                        <i class="fa-solid fa-file-lines" style="color: var(--primary-blue);"></i>
+                    </div>
+                    <p class="stat-card-value" th:text="${total}">0</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Applied</span>
+                        <i class="fa-solid fa-paper-plane" style="color: var(--success);"></i>
+                    </div>
+                    <p class="stat-card-value" th:text="${applied}">0</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Interviews</span>
+                        <i class="fa-solid fa-user-tie" style="color: var(--warning);"></i>
+                    </div>
+                    <p class="stat-card-value" th:text="${interview}">0</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Rejected</span>
+                        <i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>
+                    </div>
+                    <p class="stat-card-value" th:text="${rejected}">0</p>
+                </div>
+            </div>
+
+            <div class="table-container mt-3">
+                <div class="table-header">
+                    <h3>Recent Applications</h3>
+                    <a th:href="@{/applications}" style="color: var(--primary-blue); text-decoration: none; font-size: 14px; font-weight: 500;">View All</a>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Position</th>
+                            <th>Platform</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${recentApplications}">
+                            <td th:text="${app.company.name}">Google</td>
+                            <td th:text="${app.jobTitle}">Software Engineer</td>
+                            <td th:text="${app.jobPlatform}">LinkedIn</td>
+                            <td th:text="${app.appliedDate}">2026-08-20</td>
+                            <td><span th:class="'status status-' + ${app.status.toLowerCase()}" th:text="${app.status}">Applied</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentApplications)}">
+                            <td colspan="5" class="text-center" style="padding: 40px;">
+                                <p style="color: var(--text-light); margin-bottom: 10px;">No applications added yet.</p>
+                                <a th:href="@{/applications/add}" class="btn"><i class="fa-solid fa-plus"></i> Add your first application</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide success/error messages after 6 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.style.display = 'none', 500);
+            });
+        }, 6000);
+    </script>
+</body>
+</html>

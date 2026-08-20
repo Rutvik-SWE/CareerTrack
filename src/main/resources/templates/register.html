@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - CareerTrack</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="logo">
+                <i class="fa-solid fa-briefcase"></i> CareerTrack
+            </div>
+            <h2>Create an Account</h2>
+            <p>Start tracking your job applications today.</p>
+            
+            <form th:action="@{/register}" th:object="${user}" method="post">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" th:field="*{name}" placeholder="Enter your full name" required autofocus>
+                    <div class="alert alert-error mt-3" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" th:field="*{email}" placeholder="Enter your email address" required>
+                    <div class="alert alert-error mt-3" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" th:field="*{password}" placeholder="Create a password" required>
+                    <div class="alert alert-error mt-3" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            
+            <div class="text-center mt-3" style="font-size: 14px; color: var(--text-light);">
+                <p>Already have an account? <a th:href="@{/login}" style="color: var(--primary-blue); font-weight: 500; text-decoration: none;">Login</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
